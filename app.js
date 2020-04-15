@@ -1,19 +1,81 @@
+// Internal and External Dependencies
+
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
+const render = require("./lib/htmlRenderer");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
+// Path for creating Output folder and HTML file
+
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
-
-const render = require("./lib/htmlRenderer");
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
+// User prompts for general empoyee info
 
+const empoyeeQuestions = [
+    {
+        type: "employeeInfo",
+        name: "name",
+        message: "Name:"
+    },
+    {
+        type: "employeeInfo",
+        name: "id",
+        message: "ID:"
+    },
+    {
+        type: "employeeInfo",
+        name: "email",
+        message: "Email:"
+    }
+];
+
+// User prompts for manager subclass info
+
+const managerQuestions = [
+    {
+        type: "employeeInfo",
+        name: "officeNumber",
+        message: "Office Number:"
+    }
+];
+
+// User prompts for engineer subclass info
+
+const engineerQuestions = [
+    {
+        type: "employeeInfo",
+        name: "github",
+        message: "Github Username:"
+    }
+];
+
+// User prompts for intern subclass info
+
+const internQuestions = [
+    {
+        type: "employeeInfo",
+        name: "school",
+        message: "School Attending:"
+    }
+];
+
+// User prompts for intern subclass info
+
+const nextTeamMember = [
+    {
+        type: "list",
+        message: "What team member would you like to add next?",
+        name: "next",
+        choices: ["Engineer", "Intern", "No more team members"]
+    }
+];
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
