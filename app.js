@@ -81,7 +81,61 @@ const nextTeamMember = [
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
 
+async function createTeam() {
+    
+    // Variable holding tema members
+    const team = [];
+    
+    // Always with Manager
+    let role = "Manager";
+    
+    // While loop for until user selects no more team members
+    while (role != "No more team members") {
+        
+        // Prompt user for employee info
+        const employeeInfo = await inquirer.prompt(empoyeeQuestions);
+        
+        // Prompt user for Manager, Engineer, or Intern specific info and create new team member with constructor function of selected subclass
+        let specificInfo;
+        let newTeamMember;
 
+        switch (role) {
+
+            case "Manager":
+                specificInfo = await inquirer.prompt(managerQuestions);
+                newTeamMember = new Manager(employeeInfo.name, employeeInfo.id, employeeInfo.email, employeeInfo.officeNumber);
+                break;
+            case "Engineer":
+                specificInfo = await inquirer.prompt(engineerQuestions);
+                newTeamMember = new Engineer(employeeInfo.name, employeeInfo.id, employeeInfo.email, employeeInfo.github);
+                break;
+            case "Intern":
+                specificInfo = await inquirer.prompt(internQuestions);
+                newTeamMember = new Engineer(employeeInfo.name, employeeInfo.id, employeeInfo.email, employeeInfo.school);
+                break;
+            default:
+                console.log("Error, something went wrong")    
+        }
+
+        // Add new team member to team
+        team.push(newTeamMember);
+
+        // Prompt for next team member role
+        const answer = await inquirer.prompt(nextTeamMember);
+        role = answer.next
+    }
+
+    // Render HTML
+    const html = render(team);
+
+    // Create HTML file
+    fs.writeFile(outputPath, html, err => {
+        if (err) throw err;
+        console.log(`File ${path.basename(outputPath)} has been created!`)
+    });
+};
+
+createTeam();
 
 // After you have your html, you're now ready to create an HTML file using the HTML
 // returned from the `render` function. Now write it to a file named `team.html` in the
