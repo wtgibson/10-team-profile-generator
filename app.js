@@ -1,5 +1,6 @@
 // Internal and External Dependencies
 
+const Employee = require("./lib/Employee");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
@@ -18,7 +19,7 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 // User prompts for general empoyee info
 
-const empoyeeQuestions = [
+const employeeQuestions = [
     {
         type: "employeeInfo",
         name: "name",
@@ -93,7 +94,7 @@ async function createTeam() {
     while (role != "No more team members") {
         
         // Prompt user for employee info
-        const employeeInfo = await inquirer.prompt(empoyeeQuestions);
+        const employeeInfo = await inquirer.prompt(employeeQuestions);
         
         // Prompt user for Manager, Engineer, or Intern specific info and create new team member with constructor function of selected subclass
         let specificInfo;
@@ -103,15 +104,15 @@ async function createTeam() {
 
             case "Manager":
                 specificInfo = await inquirer.prompt(managerQuestions);
-                newTeamMember = new Manager(employeeInfo.name, employeeInfo.id, employeeInfo.email, employeeInfo.officeNumber);
+                newTeamMember = new Manager(employeeInfo.name, employeeInfo.id, employeeInfo.email, specificInfo.officeNumber);
                 break;
             case "Engineer":
                 specificInfo = await inquirer.prompt(engineerQuestions);
-                newTeamMember = new Engineer(employeeInfo.name, employeeInfo.id, employeeInfo.email, employeeInfo.github);
+                newTeamMember = new Engineer(employeeInfo.name, employeeInfo.id, employeeInfo.email, specificInfo.github);
                 break;
             case "Intern":
                 specificInfo = await inquirer.prompt(internQuestions);
-                newTeamMember = new Engineer(employeeInfo.name, employeeInfo.id, employeeInfo.email, employeeInfo.school);
+                newTeamMember = new Intern(employeeInfo.name, employeeInfo.id, employeeInfo.email, specificInfo.school);
                 break;
             default:
                 console.log("Error, something went wrong")    
@@ -122,7 +123,7 @@ async function createTeam() {
 
         // Prompt for next team member role
         const answer = await inquirer.prompt(nextTeamMember);
-        role = answer.next
+        role = answer.next;
     }
 
     // Render HTML

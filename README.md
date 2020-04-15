@@ -2,32 +2,26 @@
 
 ## Summary 
 
-The purpose of the assignment was to create a web application featuring a weather dashboard which leveraged the OpenWeather API to retrieve data dynamically updated based on the user's city search input.
+The purpose of the assignment was to create a CLI application that takes in information about employees and automatically generates an HTML page that displays summaries for each person.
 
 ```
 User Story
 
-AS A traveler
-I WANT to see the weather outlook for multiple cities
-SO THAT I can plan a trip accordingly
+As a manager
+I want to generate a webpage that displays my team's basic info
+so that I have quick access to emails and GitHub profiles
 
 Acceptance Criteria
 
-GIVEN a weather dashboard with form inputs
-WHEN I search for a city
-THEN I am presented with current and future conditions for that city and that city is added to the search history
-WHEN I view current weather conditions for that city
-THEN I am presented with the city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index
-WHEN I view the UV index
-THEN I am presented with a color that indicates whether the conditions are favorable, moderate, or severe
-WHEN I view future weather conditions for that city
-THEN I am presented with a 5-day forecast that displays the date, an icon representation of weather conditions, the temperature, and the humidity
-WHEN I click on a city in the search history
-THEN I am again presented with current and future conditions for that city
+- Functional application
+- GitHub repository with a unique name and a README describing the project.
+- User can use the CLI to generate an HTML page that displays information about their team
+- All tests must pass
 ```
 
-## Site Picture
-![Site](Assets/images/06-weather-dashboard.png)
+## Application Pictures
+![Site](Assets/app.js-CLI.gif)
+![Site](Assets/team.html-output-browser.gif)
 
 ## Technologies Used
 - HTML - used to create elements on the DOM
@@ -35,54 +29,58 @@ THEN I am again presented with current and future conditions for that city
 - Bootstrap - CSS framework directed at responsive, mobile first front-end web development
 - JavaScript - provides dynamic interactivity on HTML documents
 - jQuery - easy to use API library simplifying Javascript actions
-- Server-Side API - utilized 3rd-party application APIs to retrieve data to incorporate into the site
+- Node.js - asynchronous event-driven JavaScript runtime
 - Git - version control system to track changes to source code
 - GitHub - hosts repository that can be deployed to GitHub Pages
 
 ## Code Snippet
 
-Below is an example of a block of code in the JS file where the information for the 5-Day Forecast is retireved via an AJAX call and appended to the page dynamically based on the user's actions.
+Below is an example of a block of code in the app.js file where the user is prompted with questions regarding the team member they would like to add and the new team member object is created and pushed into an array holding all other team members. Lastly the user is asked what kind of team member they would like to add next or if they are done adding team members. 
 
 ```js
-function fiveDayForecast(city) {
-  
-  
-  var forecastQuery = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=" + apiKey;
-
-  $.ajax({
-    url: forecastQuery,
-    method: "GET"
-  }).then(function (response) {
-    forecastData = response;
-    console.log(forecastData)
+async function createTeam() {
     
-    showForecast(forecastData)
+    // Variable holding tema members
+    const team = [];
+    
+    // Always with Manager
+    let role = "Manager";
+    
+    // While loop for until user selects no more team members
+    while (role != "No more team members") {
+        
+        // Prompt user for employee info
+        const employeeInfo = await inquirer.prompt(employeeQuestions);
+        
+        // Prompt user for Manager, Engineer, or Intern specific info and create new team member with constructor function of selected subclass
+        let specificInfo;
+        let newTeamMember;
 
-  });
-};
+        switch (role) {
 
-function showForecast(forecastData) {
+            case "Manager":
+                specificInfo = await inquirer.prompt(managerQuestions);
+                newTeamMember = new Manager(employeeInfo.name, employeeInfo.id, employeeInfo.email, specificInfo.officeNumber);
+                break;
+            case "Engineer":
+                specificInfo = await inquirer.prompt(engineerQuestions);
+                newTeamMember = new Engineer(employeeInfo.name, employeeInfo.id, employeeInfo.email, specificInfo.github);
+                break;
+            case "Intern":
+                specificInfo = await inquirer.prompt(internQuestions);
+                newTeamMember = new Intern(employeeInfo.name, employeeInfo.id, employeeInfo.email, specificInfo.school);
+                break;
+            default:
+                console.log("Error, something went wrong")    
+        }
 
-  for (var i = 0; i < 5; i++) {
-    console.log(i)
+        // Add new team member to team
+        team.push(newTeamMember);
 
-    var dataIndex = forecastData.list[i * 8 + 4];
-
-    var utcSeconds = dataIndex.dt;
-    var date = new Date(0);
-    date.setUTCSeconds(utcSeconds);
-    date = date.toLocaleDateString("en-US");
-
-    var Fahrenheit = Math.round((dataIndex.main.temp * 9) / 5 - 459.67);
-
-    var cardID = $("#" + i);
-    cardID.html("<h4>" + date + "<h4>");
-    cardID.append('<img src="https://openweathermap.org/img/wn/' + dataIndex.weather[0].icon + '@2x.png" alt="weather icon" width="50px" height="50px">');
-    cardID.append("<p>Temp: " + Fahrenheit + " ℉</p>")
-    cardID.append("<p>Humidity: " + dataIndex.main.humidity + " ℉</p>")
-
-  };
-};
+        // Prompt for next team member role
+        const answer = await inquirer.prompt(nextTeamMember);
+        role = answer.next;
+    }
 ```
 
 ## Author Links
@@ -91,6 +89,6 @@ Will Gibson
 
 [LinkedIn](https://www.linkedin.com/in/wtgibson/)
 
-[GitHub](https://github.com/wtgibson/6-weather-dashboard)
+[GitHub](https://github.com/wtgibson/10-team-profile-generator)
 
 Special thanks to Mahisha Gunasekaran, Kerwin Hy, and Jeremy Cantwell for their input and assistance with the assignment!
